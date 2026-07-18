@@ -1,0 +1,74 @@
+---
+description: Phase 12 production baseline — frozen Counseling Experience Selection (v1.0.0); no booking URLs; journey complete after Phase 13
+alwaysApply: true
+---
+
+# Phase 12 Production Baseline (FROZEN)
+
+Phase 12 is **production certified and frozen** at engine version **`PHASE12_ENGINE_VERSION = v1.0.0`**.
+
+Treat the current implementation as the regression baseline. No booking functionality may be added to Phase 12. Journey is **production complete** through Phase 13 — **no Phase 14+**.
+
+## Freeze contract
+
+### Counseling Experience Selection
+
+- Deterministic service selection only
+- Catalog (frozen): `one_on_one` | `admission` | `career` | `none`
+- Personalized “why this service” explanation
+- Soft Continue / Not now; continue → Phase 13 Booking Orchestrator (**handoff only**; Phase 12 never exposes URLs)
+- Additive `phase12*` profile fields only; prior phase outputs immutable
+
+### Skip gate (mandatory — never bypass)
+
+Skip Phase 12 completely if Phase 11 One-on-One escalation **or** NIAT One-on-One recommendation already occurred.
+
+### URL ownership
+
+- Phase 12: service recommendation + personalization only
+- Phase 13: booking CTA, booking URL, booking workflow (FROZEN v1.0.0)
+- Phase 12 must **never** expose booking URLs
+
+## Guardrails (never)
+
+Expose booking URLs; collect booking information; restart earlier phases; regenerate recommendations; compare colleges; mutate rankings/recommendations/prior outputs; use LLM routing; guarantee outcomes; force counseling/booking.
+
+## Do not change unless
+
+- Fixing a **verified bug** or **regression** against this baseline
+- User explicitly requests a Phase 12 change with acknowledged freeze risk
+
+## Frozen stage chain
+
+```
+… → phase_11_final_decision_hesitation     (FROZEN v1.1.0)
+       ├─ escalate / NIAT OOO → skip Phase 12
+       └─ non-escalate → phase_12 (FROZEN v1.0.0)
+              ├─ Continue → phase_13_booking_orchestrator (FROZEN v1.0.0)
+              └─ Decline / none / skip → conversation_complete
+```
+
+## Protected surfaces
+
+| Area | Paths |
+|------|-------|
+| Constants / core / parser / engine | `constants/careerCounsellingV2CounselingExperienceSelection.js`, `careerCounsellingV2CounselingExperienceSelection*.js` |
+| Analytics | `phase12_*` in `careerCounsellingV2Analytics.js` |
+| Certs | `scripts/phase12ProductionCertification.js` |
+| Baseline | `docs/PHASE-12-PRODUCTION-BASELINE.md` |
+
+## Frozen analytics
+
+`phase12_started`, `phase12_service_selected`, `phase12_presented`, `phase12_continue`, `phase12_declined`, `phase12_skipped`
+
+## Regression baseline
+
+```bash
+node scripts/phase1to13Regression.js
+```
+
+- Engine version: `PHASE12_ENGINE_VERSION = v1.0.0`
+
+## Journey complete
+
+See `docs/AI-COUNSELING-JOURNEY-PRODUCTION-COMPLETE.md`. No further chatbot phases after Phase 13.

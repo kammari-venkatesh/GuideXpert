@@ -1,0 +1,68 @@
+---
+description: Phase 13 production baseline — frozen Booking Orchestrator (v1.0.0); journey ends at website handoff; no Phase 14
+alwaysApply: true
+---
+
+# Phase 13 Production Baseline (FROZEN)
+
+Phase 13 is **production certified and frozen** at engine version **`PHASE13_ENGINE_VERSION = v1.0.0`**.
+
+Treat the current implementation as the regression baseline. **No Phase 14 or later chatbot phases.** The chatbot ends at official website booking handoff.
+
+## Freeze contract
+
+- Canonical `BOOKING_SERVICE_REGISTRY` only — no hardcoded booking URLs outside the registry
+- CTA first; official URL only after **Book Now** (or link-seeking resume)
+- Deterministic `booking_resume` without replaying Phases 9–12
+- Skip when `phase12Service == none`, Phase 11 OOO offered, or NIAT OOO offered
+- Additive `phase13*` fields only; prior phase outputs immutable
+- Website remains the only booking create path (Section E)
+
+## Out of chatbot scope (never implement in chat)
+
+Booking creation, counselor assignment, reminders, meeting scheduling, session management, attendance, session completion, CRM workflows.
+
+## Guardrails (never)
+
+URL before Book Now; guarantees; pressure; restart earlier phases; mutate prior outputs; WhatsApp/CRM booking create; LLM routing.
+
+## Do not change unless
+
+- Fixing a **verified bug** or **regression** against this baseline
+- User explicitly requests a Phase 13 change with acknowledged freeze risk
+
+## Frozen stage chain (journey complete)
+
+```
+… → phase_12 (FROZEN v1.0.0)
+  → phase_13_booking_orchestrator (FROZEN v1.0.0)
+       → Official website / One-on-One form
+       → Human counselor process (OUTSIDE chatbot)
+```
+
+## Protected surfaces
+
+| Area | Paths |
+|------|-------|
+| Registry / engine | `constants/careerCounsellingV2BookingOrchestrator.js`, `careerCounsellingV2BookingOrchestrator*.js` |
+| Certs | `scripts/phase13ProductionCertification.js`, `scripts/phase1to13Regression.js` |
+| Baseline | `docs/PHASE-13-PRODUCTION-BASELINE.md` |
+| Journey complete | `docs/AI-COUNSELING-JOURNEY-PRODUCTION-COMPLETE.md` |
+
+## Frozen analytics
+
+`phase13_started`, `booking_service_selected`, `booking_cta_presented`, `booking_continue`, `booking_url_shared`, `booking_resume`, `booking_deferred`, `booking_abandoned`  
+Reserved only: `booking_completed` (webhook future)
+
+## Regression baseline
+
+```bash
+node scripts/phase1to13Regression.js
+```
+
+- Engine version: `PHASE13_ENGINE_VERSION = v1.0.0`
+
+## Post-journey gate
+
+- **Do not introduce Phase 14+** without new business requirements that cannot be met by this architecture
+- Future work must be additive; frozen baselines require architecture review + freeze waiver

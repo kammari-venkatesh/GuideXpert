@@ -1,0 +1,52 @@
+---
+description: Section E production baseline — frozen certified Website Booking Integration
+alwaysApply: true
+---
+
+# Section E Production Baseline (FROZEN)
+
+Section E is **production certified** (53/53 PASS, 100%). Treat the current implementation as the regression baseline.
+
+## Do not change unless
+
+- Fixing a **verified bug** or **regression** against the certified baseline
+- User explicitly requests a Section E change with acknowledged regression risk
+
+## Frozen architecture
+
+```
+Inbound → Foundation → BookingContextResolver (1× Mongo) → BookingSupportRouter
+         → Human Copilot (if handoff) → Scope → Intent → Journeys → RAG → LLM
+```
+
+- Website is the **only** booking create path; WhatsApp retrieves CRM context only
+- Deterministic booking queries **must not** invoke LLM, RAG, ICE, CPA, or ICS
+- Reschedule/cancel → website portal redirect only; **no CRM writes** from chat
+- One Mongo lookup per inbound via `bookingContextResolver`
+- Hallucination guard blocks fake confirmations when `BookingContext.exists === false`
+
+## Protected surfaces (no behavior changes without explicit approval)
+
+| Area | Key paths |
+|------|-----------|
+| Booking context | `services/chatbot/bookingContext/**` |
+| Orchestrator wiring | `chatbotOrchestratorService.js` (router early-exit order) |
+| Human Copilot | `services/chatbot/humanCopilot/**`, `handoffService.js` |
+| Scope firewall | scope/intent paths that block OOS queries |
+| Cert baseline | `scripts/sectionEProductionCertification.js`, `scripts/testBookingContextV2.js` |
+| Reports | `smoke-results/sectionE/sectionE-certification-2026-07-16T08-14-06-081Z.*` |
+
+## Regression baseline
+
+- Unit: `node scripts/testBookingContextV2.js` (5/5)
+- Production cert: `node scripts/sectionEProductionCertification.js`
+- Certified deploy: commits `cdfc11a`, `7b1cb9a` on `main`
+
+## Backlog (does not block other work)
+
+- Live CASE B validation on a phone **without** an existing booking
+
+## Section F gate
+
+- **Do not implement new functionality** until the complete Section F specification is provided
+- When spec arrives: analyze → implementation plan → dependencies & regression risks → incremental implementation preserving Section E behavior

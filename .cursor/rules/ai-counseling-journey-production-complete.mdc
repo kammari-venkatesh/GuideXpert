@@ -1,0 +1,32 @@
+---
+description: GuideXpert AI Counseling Journey v1.0 PRODUCTION COMPLETE — ends at Phase 14 terminal handoff; no further chatbot phases
+alwaysApply: true
+---
+
+# AI Counseling Journey — PRODUCTION COMPLETE (v1.0)
+
+The GuideXpert AI Counseling Engine **v1.0** is **production complete**.
+
+**Final phase:** Phase 14 Journey Completion & Platform Handoff (`PHASE14_ENGINE_VERSION = v1.0.0`).  
+**Do not add Phase 15+** unless new requirements cannot be met by this architecture + freeze waiver.
+
+## Journey end
+
+```
+… → Phase 13 Booking Orchestrator → Phase 14 Journey Completion → journey_completed
+→ Official website / operations (outside chatbot)
+```
+
+Phase 14 prepares `platformHandoffPayload` only — **no CRM / booking create / reminders**.
+
+## Frozen versions
+
+9=`v1.1.0` · 10=`v1.0.0` · 11=`v1.1.0` · 12=`v1.0.0` · 13=`v1.0.0` · 14=`v1.0.0` · Section E FROZEN
+
+## Docs
+
+`docs/AI-COUNSELING-JOURNEY-PRODUCTION-COMPLETE.md` · `docs/PHASE-14-ARCHITECTURE.md`
+
+## Regression
+
+`node scripts/phase1to14Regression.js`

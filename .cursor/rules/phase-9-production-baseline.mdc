@@ -1,0 +1,68 @@
+---
+description: Phase 9 production baseline — frozen deterministic recommendation synthesis layer
+alwaysApply: true
+---
+
+# Phase 9 Production Baseline (FROZEN)
+
+Phase 9 Personalized Recommendation Synthesis is **production certified** and frozen at engine version **v1.1.0**.
+
+Treat the current implementation as the regression baseline for all future counseling milestones (Phase 10+).
+
+## Freeze contract (stable)
+
+Phase 9 is a **deterministic recommendation synthesis layer** only.
+
+It must **never**:
+
+- Generate a new shortlist
+- Change Phase 5 rankings / tiers / order
+- Introduce new colleges
+- Produce new recommendation scores
+- Call an LLM
+- Override comparison or shortlist decisions for ranking
+
+It may **only**:
+
+- Explain and synthesize existing Phase 5 recommendations
+- Surface informational Comparison Insight (never changes rank)
+- Apply human confidence labels derived from existing signals
+- Hand off on continue to Phase 10 Future Path Vision (handoff target only; synthesis unchanged)
+
+## Do not change unless
+
+- Fixing a **verified bug** or **regression** against this baseline
+- User explicitly requests a Phase 9 change with acknowledged freeze risk
+
+## Frozen stage chain
+
+```
+… → concern_resolution
+  → phase_9_personalized_recommendation   (FROZEN v1.1.0)
+  → phase_10_future_path_vision           (FROZEN v1.0.0 — separate baseline)
+  → counseling_invitation                 (Section E CTA unchanged)
+  → conversation_complete
+```
+
+## Protected surfaces
+
+| Area | Key paths |
+|------|-----------|
+| Constants | `constants/careerCounsellingV2PersonalizedRecommendation.js` |
+| Core / parser / engine | `services/chatbot/careerCounselling/careerCounsellingV2PersonalizedRecommendation*.js` |
+| Analytics events | `phase9_recommendation_*` in `careerCounsellingV2Analytics.js` |
+| Cert | `scripts/phase9ProductionCertification.js` |
+| Journey tests | `test/careerCounsellingJourney.test.js` (Phase 9 describe) |
+| Baseline docs | `docs/PHASE-9-PRODUCTION-BASELINE.md` |
+| Cert reports | `smoke-results/sectionF/phase9-certification-2026-07-18T07-15-05-008Z.*` |
+
+## Regression baseline
+
+- Journey: `node --test test/careerCounsellingJourney.test.js`
+- Phase 9 cert: `node scripts/phase9ProductionCertification.js` (13/13 PASS)
+- Engine version: `PHASE9_ENGINE_VERSION = v1.1.0`
+
+## Later phases
+
+- Phase 10 is separately frozen — see `.cursor/rules/phase-10-production-baseline.mdc`
+- Phase 11+ must not modify Phase 9 synthesis without an explicit freeze waiver

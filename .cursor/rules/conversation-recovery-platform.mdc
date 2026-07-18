@@ -1,0 +1,39 @@
+---
+description: Conversation Recovery is a platform service; never edit Phase 1–14 counseling engines for recovery.
+globs:
+  - GuideXpert-Backend/services/conversationRecovery/**
+  - GuideXpert-Backend/services/chatbot/guidedFlows/guidedFlowProcessors.js
+  - GuideXpert-Backend/services/chatbot/chatbotOrchestratorService.js
+  - GuideXpert-Backend/controllers/conversationRecoveryAdminController.js
+  - GuideXpert-Frontend/src/pages/admin/conversation-recovery/**
+---
+
+# Conversation Recovery Platform (FROZEN BOUNDARY)
+
+Conversation Recovery is **platform infrastructure** around the frozen AI Counseling Engine (Phases 1–14).
+
+## Never
+
+- Edit files under `services/chatbot/careerCounselling/**` for recovery, follow-up, or resume behavior
+- Restart journeys from Phase 1 in recovery messages
+- Include booking URLs in recovery copy (Phase 13 owns booking CTAs)
+- Reuse WhatsApp Ops “manual recovery” for inactive counseling journeys
+
+## Always
+
+- Persist / restore via `ConversationRecoverySnapshot` + `conversationRecoveryResumeService`
+- Write snapshots only from guided-flow counselling turns (`guidedFlowProcessors.js`)
+- Resume hydrate **before** bot-state TTL wipe in the orchestrator
+- Keep admin UI at `/admin/conversation-recovery` (separate from WhatsApp Ops DLR recovery)
+
+## Freeze rule
+
+Do **not** edit Phase 1–14 engines for recovery, follow-up, or resume behavior.
+
+**Version:** Conversation Recovery & Follow-up Engine **v1.0.0** (Production Ready).
+
+## Regression
+
+- `node scripts/conversationRecoveryCertification.js`
+- `node scripts/phase1to14Regression.js` when proving engines untouched
+- Ops surfaces: health, alerts, audit, bulk, timeline, campaign performance, message preview
