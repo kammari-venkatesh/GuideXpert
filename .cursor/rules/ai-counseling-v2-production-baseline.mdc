@@ -68,13 +68,21 @@ Discovery → Education → Modern (concepts) → Personalization
 ## Regression baseline
 
 ```bash
+node scripts/counselingRoutingCertification.js            # ≥500 utterance routing gate (0 fallback)
 node scripts/counselingConversationalUxCertification.js   # 100/100 UX gate
 node scripts/counselingOrchestrationCertification.js
 node --test test/counselingOrchestration.test.js test/careerCounsellingJourney.test.js
 ```
 
 **Baseline tag:** v2.0.0  
-**Cert evidence:** `smoke-results/counseling/ux-conversational-cert-latest.md` (100 PASS / 0 FAIL)
+**Cert evidence:**  
+- `smoke-results/counseling/ux-conversational-cert-latest.md` (100 PASS / 0 FAIL)  
+- `smoke-results/counseling/routing-cert-latest.md` (routing → Career Counselling V2 only)
+
+## Routing contract (P0)
+
+Any utterance expressing college/course/career uncertainty or admissions guidance **must** classify as `career_counselling_journey` and start Discovery (Phase 1).  
+Never route these to `knowledge_assistant` / `unknown` / AI guardrail (“I don't currently have verified information…”).
 
 ## Explicit non-goals
 
